@@ -1,37 +1,52 @@
-  const form = document.querySelector('.feedback-form');
+const form = document.querySelector('.feedback-form');
 
-// Завантаження збережених даних з локального сховища
-const savedData = JSON.parse(localStorage.getItem('feedback-form-state')) || {};
-form.elements['email'].value = savedData.email || '';
-form.elements['message'].value = savedData.message || '';
-
-// Слухач подій для змін введених даних
 form.addEventListener('input', (event) => {
-  const { name, value } = event.target;
-  const currentState = JSON.parse(localStorage.getItem('feedback-form-state')) || {};
-
-  // Оновлення поточного стану новим значенням
-  currentState[name] = value.trim();
-
-  // Збереження оновленого стану в локальному сховищі
-  localStorage.setItem('feedback-form-state', JSON.stringify(currentState));
+  const emailValue = form.elements.email.value;
+  const messageValue = form.elements.message.value;
+  const formInfo = {
+    formEmail: emailValue,
+    formMessage: messageValue,
+  };
+  const formInfoStringified = JSON.stringify(formInfo);
+  localStorage.setItem('feedback-form-state', formInfoStringified);
 });
 
-// Слухач подій для подання форми
 form.addEventListener('submit', (event) => {
   event.preventDefault();
+  const emailValue = form.elements.email.value;
+  const messageValue = form.elements.message.value;
 
-  const { email, message } = form.elements;
-
-  // Перевірка, чи заповнені обидва поля електронної пошти та повідомлення
-  if (email.value.trim() && message.value.trim()) {
-    // Запис даних у консоль та очищення форми та локального сховища
-    console.log({
-      email: email.value.trim(),
-      message: message.value.trim(),
-    });
-
-    form.reset();
-    localStorage.removeItem('feedback-form-state');
+  if (!emailValue.trim() || !messageValue.trim()) {
+    alert('Please fill in both the email and message fields');
+    return;
   }
+
+  const formData = {
+    formEmail: emailValue.trim(),
+    formMessage: messageValue.trim(),
+  };
+
+ 
+  console.log(formData);
+
+
+  form.reset();
+  localStorage.removeItem('feedback-form-state');
 });
+
+function loadForm() {
+  const savedForm = localStorage.getItem('feedback-form-state');
+  if (savedForm) {
+    const parsedData = JSON.parse(savedForm);
+    form.elements.email.value = parsedData.formEmail || '';
+    form.elements.message.value = parsedData.formMessage || '';
+  }
+}
+
+
+loadForm();
+
+
+
+
+
